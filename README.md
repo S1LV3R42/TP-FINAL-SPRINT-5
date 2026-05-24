@@ -16,6 +16,7 @@ Desarrollar una aplicacion web bajo la arquitectura MVC empleando Node.js, Expre
 4. Iniciar el servidor mediante npm start o npm run dev.
 5. Visitar la URL provista en consola para la primera inicializacion (Seed) y poblar la base de datos.
 6. Operar el sistema desde el Dashboard en las direcciones mostradas en consola.
+7. Acceso mediante Render: https://tp-final-sprint-5.onrender.com/paises.
 
 ## Consideraciones Especiales
 - Filtrado y Normalizacion: El sistema aisla exclusivamente los paises cuyo idioma incluya español. El valor Gini es normalizado extrayendo el año mas reciente de la API.
