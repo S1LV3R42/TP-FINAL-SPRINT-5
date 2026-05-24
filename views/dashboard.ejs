@@ -1,0 +1,72 @@
+<%- include('layout', { body: `
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Dashboard de Países</h2>
+        <div class="d-flex">
+            <input type="text" id="searchInput" class="form-control me-2" placeholder="Buscar por nombre al instante..." value="">
+            <a href="/paises" class="btn btn-outline-secondary ms-2">Restablecer</a>
+        </div>
+    </div>
+
+    <div class="table-responsive bg-white rounded shadow-sm">
+        <table class="table table-hover align-middle mb-0" id="countriesTable">
+            <thead class="table-primary">
+                <tr>
+                    <th>Nombre Oficial</th>
+                    <th>Capital</th>
+                    <th>Fronteras</th>
+                    <th>Área (km²)</th>
+                    <th>Población</th>
+                    <th>Gini</th>
+                    <th>Zonas Horarias</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${countries.map(c => `
+                <tr class="country-row">
+                    <td class="fw-bold country-name">${c.name}</td>
+                    <td>${c.capital.join(', ')}</td>
+                    <td>${c.borders.join(', ')}</td>
+                    <td>${c.area.toLocaleString()}</td>
+                    <td>${c.population.toLocaleString()}</td>
+                    <td>${c.gini !== null ? c.gini : 'N/A'}</td>
+                    <td><small>${c.timezones.join('<br>')}</small></td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="/paises/${c._id}/editar" class="btn btn-sm btn-warning">Editar</a>
+                            <form action="/paises/${c._id}?_method=DELETE" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este país?');" style="display:inline;">
+                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                `).join('')}
+            </tbody>
+            <tfoot class="table-dark">
+                <tr>
+                    <td colspan="3" class="text-end fw-bold">TOTALES / PROMEDIOS:</td>
+                    <td class="fw-bold">${totals.area.toLocaleString()}</td>
+                    <td class="fw-bold">${totals.population.toLocaleString()}</td>
+                    <td class="fw-bold">${totals.avgGini}</td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            let filter = this.value.toLowerCase();
+            let rows = document.querySelectorAll('.country-row');
+            
+            rows.forEach(row => {
+                let name = row.querySelector('.country-name').textContent.toLowerCase();
+                if (name.includes(filter)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+`}) %>
