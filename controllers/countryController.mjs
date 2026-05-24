@@ -3,8 +3,8 @@ import * as countryService from '../services/countryService.mjs';
 
 export const seedDatabase = async (req, res) => {
     try {
-        const result = await countryService.seedCountriesFromAPI();
-        res.send(`<h1>Base de datos poblada con exito.</h1><p>${result.count} paises guardados.</p><a href="/paises">Ir al Dashboard</a>`);
+        await countryService.seedCountriesFromAPI();
+        res.redirect('/paises?seed=success');
     } catch (error) {
         res.status(500).send('Error en el Seed: ' + error.message);
     }

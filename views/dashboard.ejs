@@ -1,6 +1,11 @@
 <%- include('layout', { body: `
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Dashboard de Países</h2>
+    <div id="seedNotification" class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow" style="display: none; z-index: 1050;" role="alert">
+        <strong>Exito!</strong> La base de datos ha sido recargada desde la API.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 mt-3">
+        <h2>Dashboard de Paises</h2>
         <div class="d-flex">
             <input type="text" id="searchInput" class="form-control me-2" placeholder="Buscar por nombre al instante..." value="">
             <a href="/paises" class="btn btn-outline-secondary ms-2">Restablecer</a>
@@ -14,8 +19,8 @@
                     <th>Nombre Oficial</th>
                     <th>Capital</th>
                     <th>Fronteras</th>
-                    <th>Área (km²)</th>
-                    <th>Población</th>
+                    <th>Area (km2)</th>
+                    <th>Poblacion</th>
                     <th>Gini</th>
                     <th>Zonas Horarias</th>
                     <th>Acciones</th>
@@ -34,7 +39,7 @@
                     <td>
                         <div class="btn-group">
                             <a href="/paises/${c._id}/editar" class="btn btn-sm btn-warning">Editar</a>
-                            <form action="/paises/${c._id}?_method=DELETE" method="POST" onsubmit="return confirm('¿Seguro que deseas eliminar este país?');" style="display:inline;">
+                            <form action="/paises/${c._id}?_method=DELETE" method="POST" onsubmit="return confirm('Seguro que deseas eliminar este pais?');" style="display:inline;">
                                 <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
                             </form>
                         </div>
@@ -55,6 +60,7 @@
     </div>
 
     <script>
+        // Logica de busqueda en tiempo real
         document.getElementById('searchInput').addEventListener('keyup', function() {
             let filter = this.value.toLowerCase();
             let rows = document.querySelectorAll('.country-row');
@@ -68,5 +74,21 @@
                 }
             });
         });
+
+        // Logica de notificacion de recarga de API
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('seed') === 'success') {
+            const notification = document.getElementById('seedNotification');
+            notification.style.display = 'block';
+            
+            // Ocultar automaticamente despues de 3 segundos
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.style.display = 'none', 150);
+            }, 3000);
+
+            // Limpiar la URL para no repetir la alerta si el usuario refresca la pagina manualmente
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
     </script>
 `}) %>
