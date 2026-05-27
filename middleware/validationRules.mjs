@@ -1,16 +1,16 @@
 import { body } from 'express-validator';
-import Country from '../models/Country.mjs'; 
+import Country from '../models/Country.mjs'; // Solución al error "Country is not defined"
 
 export const countryValidationRules = [ 
-    // Validación de nombre oficial (name.official)
-    body('name.official')
+    // Validación de nombre (name)
+    body('name')
         .trim()
         .isLength({ min: 3, max: 90 }).withMessage('El nombre debe tener entre 3 y 90 caracteres.')
-        .matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\-\']+$/)
-        .withMessage('El nombre solo debe contener letras, espacios, guiones o apóstrofes.')
+        .matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)
+        .withMessage('El nombre solo debe contener letras y espacios.')
         .custom(async (value, { req }) => {
             // Se verifica la unicidad, ignorando el propio país si se está editando
-            const country = await Country.findOne({ "name.official": value });
+            const country = await Country.findOne({ name: value });
             if (country && country._id.toString() !== req.params.id) {
                 throw new Error('El país ya existe.');
             }
@@ -40,7 +40,6 @@ export const countryValidationRules = [
         .withMessage('No puede haber zonas horarias duplicadas.'),
 
     body('area').isFloat({ min: 0 }).withMessage('El area debe ser un numero positivo.'),
-    
     body('population').isInt({ min: 0 }).withMessage('La poblacion debe ser un numero entero positivo.'),
 
     body('gini')
