@@ -1,4 +1,5 @@
 import { body } from 'express-validator';
+import Country from '../models/Country.mjs'; // Solución al error "Country is not defined"
 
 export const countryValidationRules = [ 
     // Validación de nombre (name)
@@ -7,10 +8,12 @@ export const countryValidationRules = [
         .isLength({ min: 3, max: 90 }).withMessage('El nombre debe tener entre 3 y 90 caracteres.')
         .matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)
         .withMessage('El nombre solo debe contener letras y espacios.')
-        // Placeholder para validación de unicidad en el controlador/servicio
         .custom(async (value, { req }) => {
-            // Aquí deberías consultar la base de datos para verificar unicidad
-            if (await Country.findOne({ name: value })) throw new Error('El país ya existe.');
+            // Se verifica la unicidad, ignorando el propio país si se está editando
+            const country = await Country.findOne({ name: value });
+            if (country && country._id.toString() !== req.params.id) {
+                throw new Error('El país ya existe.');
+            }
             return true;
         }),
 
