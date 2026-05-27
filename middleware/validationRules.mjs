@@ -23,7 +23,7 @@ export const countryValidationRules = [
         .custom(arr => arr.length === 0 || arr.every(s => s.length >= 3 && s.length <= 90))
         .withMessage('Cada capital debe tener entre 3 y 90 caracteres.')
         .matches(/^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$/)
-        .withMessage('El nombre solo debe contener letras y espacios.')
+        .withMessage('La capital solo debe contener letras y espacios.')
         .custom(arr => arr.length === 0 || new Set(arr).size === arr.length)
         .withMessage('No puede haber capitales duplicadas.'),
 
