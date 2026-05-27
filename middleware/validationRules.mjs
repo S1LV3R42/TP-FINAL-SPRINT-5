@@ -35,18 +35,9 @@ export const countryValidationRules = [
         .withMessage('No puede haber fronteras duplicadas.'),
 
     body('timezones')
-    .customSanitizer(value => value ? value.split(',').map(s => s.trim()).filter(s => s) : [])
-    .custom(arr => arr.length === 0 || new Set(arr).size === arr.length)
-    .withMessage('No puede haber zonas horarias duplicadas.')
-    // Nueva validación para el formato específico
-    .custom(arr => {
-        // Expresión regular: UTC seguido de + o -, horas (00-14), dos puntos y minutos (00-59)
-        const regex = /^UTC[+-](0[0-9]|1[0-4]):[0-5][0-9]$/;
-        
-        // Retorna true solo si TODOS los elementos cumplen con el formato
-        return arr.every(tz => regex.test(tz));
-    })
-    .withMessage('El formato de las zonas horarias debe ser estricto (ej. UTC-06:00, UTC+14:00).');
+        .customSanitizer(value => value ? value.split(',').map(s => s.trim()).filter(s => s) : [])
+        .custom(arr => arr.length === 0 || new Set(arr).size === arr.length)
+        .withMessage('No puede haber zonas horarias duplicadas.'),
 
     body('area').isFloat({ min: 0 }).withMessage('El area debe ser un numero positivo.'),
     body('population').isInt({ min: 0 }).withMessage('La poblacion debe ser un numero entero positivo.'),
