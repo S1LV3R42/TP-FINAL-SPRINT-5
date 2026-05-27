@@ -50,8 +50,13 @@ export const getAllCountries = async (searchQuery = '') => {
 export const getCountryById = async (id) => await Country.findById(id);
 
 export const createCountry = async (data) => {
-    const newCountry = new Country({ ...data, creador: "Valdez Pablo Gabriel" });
+    // El campo creador debe venir del body y ser validado
+    const newCountry = new Country({ ...data });
     return await newCountry.save();
+};
+
+export const getCountryByName = async (name) => {
+    return await Country.findOne({ name });
 };
 
 export const updateCountry = async (id, data) => {

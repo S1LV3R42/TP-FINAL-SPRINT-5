@@ -27,6 +27,16 @@ export const renderCreateForm = (req, res) => {
 
 export const createCountry = async (req, res) => {
     const errors = validationResult(req);
+    // Validación de unicidad de nombre
+    const existing = await countryService.getCountryByName(req.body.name);
+    if (existing) {
+        errors.errors.push({
+            value: req.body.name,
+            msg: 'El país ya existe.',
+            param: 'name',
+            location: 'body'
+        });
+    }
     if (!errors.isEmpty()) {
         return res.render('form', { 
             country: req.body, 
