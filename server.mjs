@@ -21,9 +21,9 @@ app.use(methodOverride('_method'));
 connectDB();
 
 // Rutas
+app.get('/', (req, res) => res.render('landing'));
 app.use('/paises', countryRoutes);
 app.get('/acerca-de', (req, res) => res.render('about'));
-app.get('/', (req, res) => res.render('landing'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
