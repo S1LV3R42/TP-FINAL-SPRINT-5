@@ -1,29 +1,33 @@
-<%- include('layout', { body: `
-    <div id="seedNotification" class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow-sm" style="display: none; z-index: 1050; width: 90%; max-width: 400px;" role="alert">
-        <strong>Exito!</strong> Base de datos recargada.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+<%- include('layout', { body: ` <div id="seedNotification"
+    class="alert alert-success alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3 shadow-sm"
+    style="display: none; z-index: 1050; width: 90%; max-width: 400px;" role="alert">
+    <strong>Exito!</strong> Base de datos recargada.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 mt-3 gap-3">
         <h2 class="mb-0 text-center text-md-start">Dashboard de Paises</h2>
         <div class="d-flex flex-column flex-sm-row gap-2 w-100" style="max-width: 500px;">
-            <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre al instante..." value="">
+            <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre al instante..."
+                value="">
             <a href="/paises" class="btn btn-outline-secondary">Restablecer</a>
         </div>
     </div>
 
     <div class="table-responsive bg-white rounded shadow-sm border">
-        <table class="table table-hover align-middle mb-0" id="countriesTable">
-            <thead class="table-primary text-nowrap">
+        <table class="table table-hover align-middle mb-0" id="countriesTable"
+            style="table-layout: fixed; word-wrap: break-word;">
+            <thead class="table-primary">
                 <tr>
-                    <th>Nombre Oficial</th>
-                    <th>Capital</th>
-                    <th>Fronteras</th>
-                    <th>Area (km2)</th>
-                    <th>Poblacion</th>
-                    <th>Gini</th>
-                    <th>Zonas Horarias</th>
-                    <th>Acciones</th>
+                    <th style="width: 16%;">Nombre Oficial</th>
+                    <th style="width: 11%;">Capital</th>
+                    <th style="width: 12%;">Fronteras</th>
+                    <th style="width: 10%;">Área (km²)</th>
+                    <th style="width: 11%;">Población</th>
+                    <th style="width: 7%;">Gini</th>
+                    <th style="width: 10%;">Zonas Horarias</th>
+                    <th style="width: 12%;">Creador</th>
+                    <th style="width: 11%;">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,16 +40,23 @@
                     <td>${c.population.toLocaleString()}</td>
                     <td>${c.gini !== null ? c.gini : 'N/A'}</td>
                     <td><small>${c.timezones.join('<br>')}</small></td>
+                    <td><span class="badge bg-secondary">@${c.creador}</span></td>
                     <td>
-                        <div class="d-flex gap-1 flex-wrap">
-                            <a href="/paises/${c._id}/editar" class="btn btn-sm btn-warning">Editar</a>
-                            <form action="/paises/${c._id}?_method=DELETE" method="POST" onsubmit="return confirm('Seguro que deseas eliminar este pais?');">
-                                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                        <div class="d-flex gap-1 flex-nowrap align-items-center">
+                            <a href="/paises/${c._id}/editar" class="btn btn-sm btn-warning text-nowrap">Editar</a>
+                            <form action="/paises/${c._id}?_method=DELETE" method="POST" class="m-0"
+                                onsubmit="return confirm('Seguro que deseas eliminar este pais?');">
+                                <button type="submit" class="btn btn-sm btn-danger text-nowrap">Eliminar</button>
                             </form>
                         </div>
                     </td>
                 </tr>
                 `).join('')}
+                <tr id="noResultsRow" style="display: none;">
+                    <td colspan="100%" class="text-center text-muted py-4">
+                        <em>No se encontraron países que coincidan con la búsqueda.</em>
+                    </td>
+                </tr>
             </tbody>
             <tfoot class="table-dark text-nowrap">
                 <tr>
@@ -53,32 +64,43 @@
                     <td class="fw-bold">${totals.area.toLocaleString()}</td>
                     <td class="fw-bold">${totals.population.toLocaleString()}</td>
                     <td class="fw-bold">${totals.avgGini}</td>
-                    <td colspan="2"></td>
+                    <td colspan="3"></td>
                 </tr>
             </tfoot>
         </table>
     </div>
 
     <script>
-        document.getElementById('searchInput').addEventListener('keyup', function() {
-            let filter = this.value.toLowerCase();
+        document.getElementById('searchInput').addEventListener('keyup', function () {
+            // Función para normalizar texto: pasa a minúsculas y elimina tildes/acentos
+            const normalizeStr = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+            let filter = normalizeStr(this.value);
             let rows = document.querySelectorAll('.country-row');
-            
+            let visibleCount = 0; // Contador de coincidencias
+
             rows.forEach(row => {
-                let name = row.querySelector('.country-name').textContent.toLowerCase();
+                let name = normalizeStr(row.querySelector('.country-name').textContent);
                 if (name.includes(filter)) {
                     row.style.display = '';
+                    visibleCount++;
                 } else {
                     row.style.display = 'none';
                 }
             });
+
+            // Mostrar/ocultar el mensaje de "Sin resultados"
+            const noResultsRow = document.getElementById('noResultsRow');
+            if (noResultsRow) {
+                noResultsRow.style.display = visibleCount === 0 ? '' : 'none';
+            }
         });
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('seed') === 'success') {
             const notification = document.getElementById('seedNotification');
             notification.style.display = 'block';
-            
+
             setTimeout(() => {
                 notification.classList.remove('show');
                 setTimeout(() => notification.style.display = 'none', 150);
@@ -87,4 +109,4 @@
             window.history.replaceState({}, document.title, window.location.pathname);
         }
     </script>
-`}) %>
+    `}) %>

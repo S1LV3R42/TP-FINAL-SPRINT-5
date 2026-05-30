@@ -22,12 +22,14 @@ connectDB();
 
 // Rutas
 app.use('/paises', countryRoutes);
+app.get('/acerca-de', (req, res) => res.render('about'));
 app.get('/', (req, res) => res.render('landing'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor activo en puerto ${PORT}`);
     console.log(`--- Direcciones para testeo ---`);
+    console.log(`Landing Page:        http://localhost:${PORT}`);
     console.log(`Dashboard principal: http://localhost:${PORT}/paises`);
     console.log(`Recargar API (Seed): http://localhost:${PORT}/paises/seed`);
     console.log(`Agregar un pais:     http://localhost:${PORT}/paises/nuevo`);
