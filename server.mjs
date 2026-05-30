@@ -22,7 +22,7 @@ connectDB();
 
 // Rutas
 app.use('/paises', countryRoutes);
-app.get('/', (req, res) => res.redirect('/paises'));
+app.get('/', (req, res) => res.render('landing'));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
